@@ -21,10 +21,24 @@
   const remoteServiceName = 'catalogue'; // name of remote application
 
   const zipkinRequest = wrapRequest(request, {tracer, remoteServiceName});
+  const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
+
   var express   = require("express")
     , endpoints = require("../endpoints")
     , helpers   = require("../../helpers")
     , app       = express()
+
+    
+  app.use(zipkinMiddleware({tracer}));
+  
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', [
+      'Origin', 'Accept', 'X-Requested-With', 'X-B3-TraceId',
+      'X-B3-ParentSpanId', 'X-B3-SpanId', 'X-B3-Sampled'
+    ].join(', '));
+    next();
+  });
 
   app.get("/catalogue/images*", function (req, res, next) {
     var url = endpoints.catalogueUrl + req.url.toString();
