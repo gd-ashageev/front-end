@@ -28,7 +28,13 @@
     "serve-static": "^1.10.2",
     "prom-client": "^6.3.0",
     "morgan": "^1.7.0",
-    "connect-redis": "^3.2.0"
+    "connect-redis": "^3.2.0",
+    "zipkin": "^0.11.1",
+    "zipkin-context-cls": "^0.11.0",
+    "zipkin-instrumentation-cujojs-rest": "^0.11.1",
+    "zipkin-instrumentation-express": "^0.11.1",
+    "zipkin-instrumentation-request": "^0.11.1",
+    "zipkin-transport-http": "^0.11.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",

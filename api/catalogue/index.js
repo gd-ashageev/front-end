@@ -1,25 +1,49 @@
 (function (){
   'use strict';
+  const {Tracer, BatchRecorder, ExplicitContext, jsonEncoder: {JSON_V1}} = require('zipkin');
+  const {HttpLogger} = require('zipkin-transport-http');
+  const wrapRequest = require('zipkin-instrumentation-request');
+  const request = require('request');
+  
+  const ctxImpl = new ExplicitContext();
+  
+  const tracer = new Tracer({
+    ctxImpl: ctxImpl,
+    recorder: new BatchRecorder({
+      logger: new HttpLogger({
+        endpoint: 'http://zipkin.istio-system.svc.cluster.local:9411/api/v1/spans',
+        jsonEncoder: JSON_V1
+      })
+    }),
+    localServiceName: 'front-end'
+  });
 
+  const remoteServiceName = 'catalogue'; // name of remote application
+
+  const zipkinRequest = wrapRequest(request, {tracer, remoteServiceName});
   var express   = require("express")
-    , request   = require("request")
     , endpoints = require("../endpoints")
     , helpers   = require("../../helpers")
     , app       = express()
 
   app.get("/catalogue/images*", function (req, res, next) {
     var url = endpoints.catalogueUrl + req.url.toString();
-    request.get(url)
+    zipkinRequest.get(url)
         .on('error', function(e) { next(e); })
         .pipe(res);
   });
 
   app.get("/catalogue*", function (req, res, next) {
-    helpers.simpleHttpRequest(endpoints.catalogueUrl + req.url.toString(), res, next);
+    helpers.simpleHttpRequest(endpoints.catalogueUrl + req.url.toString(), res, next, {
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+      }
+    );
   });
 
   app.get("/tags", function(req, res, next) {
-    helpers.simpleHttpRequest(endpoints.tagsUrl, res, next);
+    helpers.simpleHttpRequest(endpoints.tagsUrl, res, next, {
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+      });
   });
 
   module.exports = app;

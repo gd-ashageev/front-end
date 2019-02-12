@@ -1,7 +1,13 @@
 (function() {
     'use strict';
 
-    var async = require("async"), express = require("express"), request = require("request"), endpoints = require("../endpoints"), helpers = require("../../helpers"), app = express(), cookie_name = "logged_in"
+    var async = require("async"), 
+        express = require("express"), 
+        request = require("request"), 
+        endpoints = require("../endpoints"), 
+        helpers = require("../../helpers"), 
+        app = express(), 
+        cookie_name = "logged_in"
 
 
     app.get("/customers/:id", function(req, res, next) {

@@ -10,7 +10,7 @@ services:
     environment:
       - reschedule:on-node-failure
   catalogue:
-    image: weaveworksdemos/catalogue
+    image: gdashageev/catalogue
     hostname: catalogue
     restart: always
     environment:

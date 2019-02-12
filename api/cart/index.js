@@ -74,7 +74,12 @@
 
     async.waterfall([
         function (callback) {
-          request(endpoints.catalogueUrl + "/catalogue/" + req.body.id.toString(), function (error, response, body) {
+          request({ 
+            url: endpoints.catalogueUrl + "/catalogue/" + req.body.id.toString(),
+            headers: {
+              'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+            }
+          }, function (error, response, body) {
             console.log(body);
             callback(error, JSON.parse(body));
           });
@@ -122,7 +127,12 @@
 
     async.waterfall([
         function (callback) {
-          request(endpoints.catalogueUrl + "/catalogue/" + req.body.id.toString(), function (error, response, body) {
+          request({ 
+            url: endpoints.catalogueUrl + "/catalogue/" + req.body.id.toString(),
+            headers: {
+              'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+            }
+          }, function (error, response, body) {
             console.log(body);
             callback(error, JSON.parse(body));
           });

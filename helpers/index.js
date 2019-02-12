@@ -4,6 +4,25 @@
   var request = require("request");
   var helpers = {};
 
+  const {HttpLogger} = require('zipkin-transport-http');
+  const {Tracer, ExplicitContext, BatchRecorder, jsonEncoder: {JSON_V1}} = require('zipkin');
+  const wrapRequest = require('zipkin-instrumentation-request');
+  
+  const ctxImpl = new ExplicitContext();
+  const tracer = new Tracer({
+    ctxImpl: ctxImpl,
+    recorder: new BatchRecorder({
+      logger: new HttpLogger({
+        endpoint: 'http://zipkin.istio-system.svc.cluster.local:9411/api/v1/spans',
+        jsonEncoder: JSON_V1
+      })
+    }),
+    localServiceName: 'front-end'
+  });
+  
+  const remoteServiceName = 'catalogue'; // name of remote application
+  const zipkinRequest = wrapRequest(request, {tracer, remoteServiceName});
+
   /* Public: errorHandler is a middleware that handles your errors
    *
    * Example:
@@ -75,8 +94,8 @@
    *   });
    * });
    */
-  helpers.simpleHttpRequest = function(url, res, next) {
-    request.get(url, function(error, response, body) {
+  helpers.simpleHttpRequest = function(url, res, next, headers = {}) {
+    zipkinRequest.get({ url: url, headers: headers }, function(error, response, body) {
       if (error) return next(error);
       helpers.respondSuccessBody(res, body);
     }.bind({res: res}));

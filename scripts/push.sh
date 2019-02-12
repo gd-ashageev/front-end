@@ -38,13 +38,8 @@ tag_and_push_all() {
     push "$DOCKER_REPO:$TAG";
 }
 
-# Push snapshot when in master
-if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    tag_and_push_all master-${COMMIT:0:8}
-fi;
-
 # Push tag and latest when tagged
-if [ -n "$TRAVIS_TAG" ]; then
-    tag_and_push_all ${TRAVIS_TAG}
+if [ -n "${TAG}" ]; then
+    tag_and_push_all ${TAG}
     tag_and_push_all latest
-fi;
+fip

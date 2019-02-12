@@ -1,3 +1,20 @@
+const {trace, BatchRecorder, Tracer, ExplicitContext,   jsonEncoder: {JSON_V1}} = require('zipkin');
+const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
+const {HttpLogger} = require('zipkin-transport-http');
+const CLSContext = require('zipkin-context-cls');
+var ctxImpl = new ExplicitContext();
+
+const tracer = new Tracer({
+  ctxImpl: ctxImpl,
+  recorder: new BatchRecorder({
+    logger: new HttpLogger({
+      endpoint: 'http://zipkin.istio-system.svc.cluster.local:9411/api/v1/spans',
+      jsonEncoder: JSON_V1
+    })
+  }),
+  localServiceName: 'front-end'
+});
+
 var request      = require("request")
   , express      = require("express")
   , morgan       = require("morgan")
@@ -51,6 +68,12 @@ app.use(orders);
 app.use(user);
 
 app.use(helpers.errorHandler);
+
+app.use(zipkinMiddleware({
+  tracer,
+  serviceName: 'zipkinMiddleware',
+  port: 8079
+}));
 
 var server = app.listen(process.env.PORT || 8079, function () {
   var port = server.address().port;
