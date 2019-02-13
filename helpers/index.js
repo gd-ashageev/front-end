@@ -95,7 +95,14 @@
    * });
    */
   helpers.simpleHttpRequest = function(url, res, next, headers = {}) {
-    zipkinRequest.get({ url: url, headers: headers }, function(error, response, body) {
+    zipkinRequest.get({ url: url }, function(error, response, body) {
+      if (error) return next(error);
+      helpers.respondSuccessBody(res, body);
+    }.bind({res: res}));
+  }
+
+  helpers.ZipkinsimpleHttpRequest = function(url, res, next) {
+    zipkinRequest.get({ url: url }, function(error, response, body) {
       if (error) return next(error);
       helpers.respondSuccessBody(res, body);
     }.bind({res: res}));

@@ -42,22 +42,30 @@
 
   app.get("/catalogue/images*", function (req, res, next) {
     var url = endpoints.catalogueUrl + req.url.toString();
-    zipkinRequest.get(url)
+    zipkinRequest.get({url:url, headers: {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'}})
         .on('error', function(e) { next(e); })
         .pipe(res);
   });
 
   app.get("/catalogue*", function (req, res, next) {
-    helpers.simpleHttpRequest(endpoints.catalogueUrl + req.url.toString(), res, next, {
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
-      }
-    );
+    var url = endpoints.catalogueUrl + req.url.toString();
+    zipkinRequest.get({url:url, headers: {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'}})
+      .on('error', function(e) { next(e); })
+      .pipe(res);
+    // helpers.simpleHttpRequest(endpoints.catalogueUrl + req.url.toString(), res, next, {
+    //     'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+    //   }
+    // );
   });
 
   app.get("/tags", function(req, res, next) {
-    helpers.simpleHttpRequest(endpoints.tagsUrl, res, next, {
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
-      });
+    // helpers.simpleHttpRequest(endpoints.tagsUrl, res, next, {
+    //     'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'
+    //   });
+    var url = endpoints.tagsUrl + req.url.toString();
+    zipkinRequest.get({url:url, headers: {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36'}})
+      .on('error', function(e) { next(e); })
+      .pipe(res);
   });
 
   module.exports = app;
